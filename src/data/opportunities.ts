@@ -20,6 +20,7 @@ export interface Opportunity {
   address: string
   evaluationPdfUrl: string // فایل ارزیابی ما
   hasBouncedCheque: boolean // چک برگشتی دارد / ندارد
+  creditRating: string // رتبه اعتباری
 }
 
 export const opportunities: Opportunity[] = [
@@ -46,6 +47,7 @@ export const opportunities: Opportunity[] = [
     address: "تهران، شهرک علمی و تحقیقاتی، خیابان نوآوری، پلاک ۱۲",
     evaluationPdfUrl: "/docs/evaluation-energy.pdf",
     hasBouncedCheque: false,
+    creditRating: "A+",
   },
   {
     id: "salamat-bio",
@@ -70,6 +72,7 @@ export const opportunities: Opportunity[] = [
     address: "اصفهان، شهرک علمی و تحقیقاتی اصفهان، ساختمان فناوری، واحد ۷",
     evaluationPdfUrl: "/docs/evaluation-bio.pdf",
     hasBouncedCheque: false,
+    creditRating: "A",
   },
   {
     id: "digital-agri",
@@ -94,6 +97,7 @@ export const opportunities: Opportunity[] = [
     address: "شیراز، پارک علم و فناوری فارس، مرکز رشد، واحد ۲۱",
     evaluationPdfUrl: "/docs/evaluation-agri.pdf",
     hasBouncedCheque: true,
+    creditRating: "B+",
   },
 ]
 
