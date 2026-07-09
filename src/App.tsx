@@ -7,6 +7,7 @@ import Opportunities from "./components/Opportunities"
 import ProjectDetails from "./components/ProjectDetails"
 import LoginPage from "./components/LoginPage"
 import Footer from "./components/Footer"
+import FloatingCartButton from "./components/FloatingCartButton"
 import { CartProvider } from "./context/CartContext"
 import { AuthProvider } from "./context/AuthContext"
 import { AuthModalProvider } from "./context/AuthModalContext"
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
         </Routes>
         {pathname !== "/login" && <Footer />}
+        <FloatingCartButton />
       </div>
         </CartProvider>
       </AuthModalProvider>

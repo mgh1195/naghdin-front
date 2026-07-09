@@ -1,53 +1,138 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react"
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react"
+import { useAuth } from "./AuthContext"
+import {
+  getCartApi,
+  addToCartApi,
+  removeFromCartApi,
+  type Cart,
+} from "@/services/cart"
+
+import CartDrawer from "@/components/CartDrawer"
 
 interface CartContextValue {
   items: Set<string>
+  cart: Cart | null
+  loading: boolean
+  error: string | null
   isInCart: (id: string) => boolean
-  addToCart: (id: string) => void
-  removeFromCart: (id: string) => void
-  toggleCart: (id: string) => void
+  addToCart: (id: string) => Promise<void>
+  removeFromCart: (id: string) => Promise<void>
+  toggleCart: (id: string) => Promise<void>
   count: number
+  drawerOpen: boolean
+  openDrawer: () => void
+  closeDrawer: () => void
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
 
-// به‌صورت پیش‌فرض یک مورد در سبد خرید قرار دارد تا هر دو حالت «خرید» و «حذف»
-// در جدول چک‌ها قابل مشاهده باشد.
-const DEFAULT_CART = ["check-parsian-1"]
-
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<Set<string>>(new Set(DEFAULT_CART))
+  const { isAuthenticated } = useAuth()
+  const [itemIds, setItemIds] = useState<Set<string>>(new Set())
+  const [cart, setCart] = useState<Cart | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const value = useMemo<CartContextValue>(() => {
-    const addToCart = (id: string) =>
-      setItems((prev) => new Set(prev).add(id))
+  const openDrawer = useCallback(() => setDrawerOpen(true), [])
+  const closeDrawer = useCallback(() => setDrawerOpen(false), [])
 
-    const removeFromCart = (id: string) =>
-      setItems((prev) => {
-        const next = new Set(prev)
-        next.delete(id)
-        return next
-      })
+  const fetchCart = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const data = await getCartApi()
+      setCart(data)
+      setItemIds(new Set(data.items.map((i) => i.check.id)))
+    } catch {
+      setError("خطا در دریافت سبد خرید")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
-    const toggleCart = (id: string) =>
-      setItems((prev) => {
-        const next = new Set(prev)
-        if (next.has(id)) next.delete(id)
-        else next.add(id)
-        return next
-      })
+  // Auto-fetch cart when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchCart()
+    } else {
+      setCart(null)
+      setItemIds(new Set())
+      setError(null)
+    }
+  }, [isAuthenticated, fetchCart])
 
-    return {
-      items,
-      isInCart: (id: string) => items.has(id),
+  const addToCart = useCallback(
+    async (id: string) => {
+      try {
+        setError(null)
+        const data = await addToCartApi(id)
+        setCart(data)
+        setItemIds(new Set(data.items.map((i) => i.check.id)))
+      } catch {
+        setError("خطا در افزودن به سبد خرید")
+      }
+    },
+    [],
+  )
+
+  const removeFromCart = useCallback(
+    async (id: string) => {
+      try {
+        setError(null)
+        const data = await removeFromCartApi(id)
+        setCart(data)
+        setItemIds(new Set(data.items.map((i) => i.check.id)))
+      } catch {
+        setError("خطا در حذف از سبد خرید")
+      }
+    },
+    [],
+  )
+
+  const toggleCart = useCallback(
+    async (id: string) => {
+      if (itemIds.has(id)) {
+        await removeFromCart(id)
+      } else {
+        await addToCart(id)
+      }
+    },
+    [itemIds, addToCart, removeFromCart],
+  )
+
+  const value = useMemo<CartContextValue>(
+    () => ({
+      items: itemIds,
+      cart,
+      loading,
+      error,
+      isInCart: (id: string) => itemIds.has(id),
       addToCart,
       removeFromCart,
       toggleCart,
-      count: items.size,
-    }
-  }, [items])
+      count: itemIds.size,
+      drawerOpen,
+      openDrawer,
+      closeDrawer,
+    }),
+    [itemIds, cart, loading, error, addToCart, removeFromCart, toggleCart, drawerOpen, openDrawer, closeDrawer],
+  )
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      <CartDrawer />
+    </CartContext.Provider>
+  )
 }
 
 export function useCart() {
