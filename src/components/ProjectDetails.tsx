@@ -9,6 +9,7 @@ import {
 import { cn, faNumber, toFa } from "@/lib/utils"
 import { useCart } from "@/context/CartContext"
 import CheckCard from "./CheckCard"
+import GuarantorBar from "./GuarantorBar"
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -94,6 +95,7 @@ export default function ProjectDetails() {
             >
               {isClosed ? "تکمیل شده" : "در حال جذب سرمایه"}
             </span>
+            <GuarantorBar guarantor={project.guarantor} />
           </div>
 
           {/* Content side — second in DOM, so in RTL flex-row it lands on the left */}
@@ -150,12 +152,6 @@ export default function ProjectDetails() {
               </div>
             </div>
 
-            <div className="mt-2 border-t border-border/70 pt-4">
-              <span className="text-xs text-muted-foreground">ضامن</span>
-              <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">
-                {project.guarantor}
-              </p>
-            </div>
           </div>
         </div>
 

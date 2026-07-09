@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react"
 import { Link } from "react-router-dom"
 import type { Opportunity } from "@/data/opportunities"
 import { faNumber, toFa } from "@/lib/utils"
+import GuarantorBar from "./GuarantorBar"
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -34,6 +35,7 @@ export default function OpportunityCard({ item }: { item: Opportunity }) {
           >
             {isClosed ? "تکمیل شده" : "در حال جذب سرمایه"}
           </span>
+          <GuarantorBar guarantor={item.guarantor} />
         </div>
 
         {/* Content side */}
@@ -80,13 +82,6 @@ export default function OpportunityCard({ item }: { item: Opportunity }) {
               label="بازه مبالغ (ریال)"
               value={`${faNumber(item.amountFrom)} تا ${faNumber(item.amountTo)}`}
             />
-          </div>
-
-          <div className="mt-2 border-t border-border/70 pt-4">
-            <span className="text-xs text-muted-foreground">ضامن</span>
-            <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">
-              {item.guarantor}
-            </p>
           </div>
 
           <div className="mt-6">
