@@ -9,22 +9,24 @@ const links = [
   { label: "درباره ما", href: "#footer" },
 ]
 
-export default function Navbar() {
+export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const visible = scrolled || alwaysSolid
 
   useEffect(() => {
+    if (alwaysSolid) return
     const onScroll = () => setScrolled(window.scrollY > 20)
     onScroll()
     window.addEventListener("scroll", onScroll)
     return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+  }, [alwaysSolid])
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled
+        visible
           ? "border-b border-border bg-background/85 backdrop-blur-md"
           : "bg-transparent",
       )}
@@ -38,7 +40,7 @@ export default function Navbar() {
           <span
             className={cn(
               "text-lg font-bold tracking-tight transition-colors",
-              scrolled ? "text-foreground" : "text-white",
+              visible ? "text-foreground" : "text-white",
             )}
           >
             سرمایه
@@ -53,7 +55,7 @@ export default function Navbar() {
                 href={link.href}
                 className={cn(
                   "text-sm font-medium transition-colors",
-                  scrolled
+                  visible
                     ? "text-muted-foreground hover:text-foreground"
                     : "text-white/85 hover:text-white",
                 )}
@@ -80,7 +82,7 @@ export default function Navbar() {
           onClick={() => setOpen((v) => !v)}
           className={cn(
             "flex size-10 items-center justify-center rounded-lg transition-colors md:hidden",
-            scrolled || open ? "text-foreground" : "text-white",
+            visible || open ? "text-foreground" : "text-white",
           )}
           aria-label={open ? "بستن منو" : "باز کردن منو"}
           aria-expanded={open}

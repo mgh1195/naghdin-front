@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useLocation, Routes, Route } from "react-router-dom"
+import { Routes, Route, useLocation } from "react-router-dom"
 import Navbar from "./components/Navbar"
 import Hero from "./components/Hero"
 import SummaryStats from "./components/SummaryStats"
@@ -17,11 +17,12 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
   return (
     <CartProvider>
       <div className="min-h-screen bg-background">
         <ScrollToTop />
-        <Navbar />
+        <Navbar alwaysSolid={pathname !== "/"} />
         <Routes>
           <Route
             path="/"
