@@ -8,6 +8,7 @@ import {
 } from "@/data/opportunities"
 import { cn, faNumber, toFa } from "@/lib/utils"
 import { useCart } from "@/context/CartContext"
+import { useAuthGuard } from "@/context/AuthModalContext"
 import CheckCard from "./CheckCard"
 import GuarantorBar from "./GuarantorBar"
 
@@ -66,6 +67,7 @@ export default function ProjectDetails() {
   type ViewMode = "card" | "table"
   const [viewMode, setViewMode] = useState<ViewMode>("card")
   const { isInCart, addToCart, removeFromCart } = useCart()
+  const { authenticate } = useAuthGuard()
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-20 md:px-8">
@@ -269,7 +271,7 @@ export default function ProjectDetails() {
                             ) : (
                               <button
                                 type="button"
-                                onClick={() => addToCart(item.id)}
+                                onClick={() => authenticate(() => addToCart(item.id))}
                                 className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:opacity-90"
                               >
                                 <ShoppingCart className="size-3.5" />
@@ -427,7 +429,7 @@ export default function ProjectDetails() {
           {/* Evaluation PDF modal */}
           {evaluationModalOpen && (
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 backdrop-blur-sm p-4"
               onClick={() => setEvaluationModalOpen(false)}
               role="dialog"
               aria-modal="true"
@@ -462,7 +464,7 @@ export default function ProjectDetails() {
           {/* Document modal */}
           {docModal && (
             <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 backdrop-blur-sm p-4"
               onClick={() => setDocModal(null)}
               role="dialog"
               aria-modal="true"

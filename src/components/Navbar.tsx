@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
-import { Menu, X, TrendingUp } from "lucide-react"
+import { Link, useLocation } from "react-router-dom"
+import { Menu, X, TrendingUp, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/context/AuthContext"
 
 const links = [
   { label: "خانه", href: "#hero" },
@@ -13,6 +15,8 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const visible = scrolled || alwaysSolid
+  const { isAuthenticated, phone, logout } = useAuth()
+  const { pathname } = useLocation()
 
   useEffect(() => {
     if (alwaysSolid) return
@@ -66,7 +70,7 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
           ))}
         </ul>
 
-        {/* CTA */}
+        {/* Desktop actions */}
         <div className="hidden items-center gap-3 md:flex">
           <a
             href="#opportunities"
@@ -74,6 +78,44 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
           >
             شروع سرمایه‌گذاری
           </a>
+          {isAuthenticated ? (
+            <>
+              <span
+                className={cn(
+                  "text-sm font-medium",
+                  visible ? "text-foreground" : "text-white",
+                )}
+              >
+                {phone}
+              </span>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className={cn(
+                  "flex size-9 items-center justify-center rounded-lg transition-colors",
+                  visible
+                    ? "text-muted-foreground hover:text-foreground"
+                    : "text-white/70 hover:text-white",
+                )}
+                aria-label="خروج"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              state={{ from: pathname }}
+              className={cn(
+                "rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors",
+                visible
+                  ? "border-border bg-card text-foreground hover:bg-background"
+                  : "border-white/30 text-white hover:border-white/60",
+              )}
+            >
+              ورود
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -115,6 +157,32 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
                 شروع سرمایه‌گذاری
               </a>
             </li>
+            {isAuthenticated ? (
+              <li className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout()
+                    setOpen(false)
+                  }}
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
+                >
+                  <LogOut className="size-4" />
+                  خروج
+                </button>
+              </li>
+            ) : (
+              <li className="mt-2">
+                <Link
+                  to="/login"
+                  state={{ from: pathname }}
+                  onClick={() => setOpen(false)}
+                  className="block rounded-full border border-border bg-card px-5 py-3 text-center text-sm font-semibold text-foreground transition-colors hover:bg-background"
+                >
+                  ورود
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       )}

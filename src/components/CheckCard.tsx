@@ -3,10 +3,12 @@ import { ShoppingCart, ImageIcon, ShieldCheck, X, Trash2, Check as CheckIcon } f
 import type { Check } from "@/data/opportunities"
 import { faNumber, toFa } from "@/lib/utils"
 import { useCart } from "@/context/CartContext"
+import { useAuthGuard } from "@/context/AuthModalContext"
 
 export default function CheckCard({ item }: { item: Check }) {
   const [modalOpen, setModalOpen] = useState(false)
   const { isInCart, toggleCart } = useCart()
+  const { authenticate } = useAuthGuard()
   const inCart = isInCart(item.id)
 
   return (
@@ -70,7 +72,7 @@ export default function CheckCard({ item }: { item: Check }) {
         {/* دکمه افزودن به سبد خرید */}
         <button
           type="button"
-          onClick={() => toggleCart(item.id)}
+          onClick={() => authenticate(() => toggleCart(item.id))}
           className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
             inCart
               ? "bg-accent text-accent-foreground"
@@ -94,7 +96,7 @@ export default function CheckCard({ item }: { item: Check }) {
       {/* مدال تصویر واقعی چک */}
       {modalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 backdrop-blur-sm p-4"
           onClick={() => setModalOpen(false)}
           role="dialog"
           aria-modal="true"

@@ -5,8 +5,11 @@ import Hero from "./components/Hero"
 import SummaryStats from "./components/SummaryStats"
 import Opportunities from "./components/Opportunities"
 import ProjectDetails from "./components/ProjectDetails"
+import LoginPage from "./components/LoginPage"
 import Footer from "./components/Footer"
 import { CartProvider } from "./context/CartContext"
+import { AuthProvider } from "./context/AuthContext"
+import { AuthModalProvider } from "./context/AuthModalContext"
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -19,10 +22,14 @@ function ScrollToTop() {
 export default function App() {
   const { pathname } = useLocation()
   return (
-    <CartProvider>
+    <AuthProvider>
+      <AuthModalProvider>
+        <CartProvider>
       <div className="min-h-screen bg-background">
         <ScrollToTop />
-        <Navbar alwaysSolid={pathname !== "/"} />
+        {pathname !== "/login" && (
+          <Navbar alwaysSolid={pathname !== "/"} />
+        )}
         <Routes>
           <Route
             path="/"
@@ -35,9 +42,12 @@ export default function App() {
             }
           />
           <Route path="/projects/:id" element={<ProjectDetails />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
-        <Footer />
+        {pathname !== "/login" && <Footer />}
       </div>
-    </CartProvider>
+        </CartProvider>
+      </AuthModalProvider>
+    </AuthProvider>
   )
 }
