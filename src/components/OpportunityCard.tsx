@@ -1,4 +1,5 @@
 import { ArrowLeft } from "lucide-react"
+import { Link } from "react-router-dom"
 import type { Opportunity } from "@/data/opportunities"
 import { faNumber, toFa } from "@/lib/utils"
 
@@ -89,13 +90,13 @@ export default function OpportunityCard({ item }: { item: Opportunity }) {
           </div>
 
           <div className="mt-6">
-            <a
-              href="#"
+            <Link
+              to={`/projects/${item.id}`}
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
             >
               {isClosed ? "مشاهده جزئیات پروژه" : "سرمایه‌گذاری در این پروژه"}
               <ArrowLeft className="size-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -132,7 +132,7 @@ export interface Check {
 export const checks: Check[] = [
   {
     id: "check-parsian-1",
-    title: "چک شماره ۱ - پارسیان رزین آمود",
+    title: "پارسیان رزین آمود",
     image: "/images/check-1.png",
     fullImage: "/images/check-1.png",
     discountedAmount: 1_230_462_960,
@@ -147,7 +147,7 @@ export const checks: Check[] = [
   },
   {
     id: "check-parsian-2",
-    title: "چک شماره ۲ - پارسیان رزین آمود",
+    title: "پارسیان رزین آمود",
     image: "/images/check-2.png",
     fullImage: "/images/check-2.png",
     discountedAmount: 2_480_750_000,
@@ -162,7 +162,7 @@ export const checks: Check[] = [
   },
   {
     id: "check-parsian-3",
-    title: "چک شماره ۳ - پارسیان رزین آمود",
+    title: "پارسیان رزین آمود",
     image: "/images/check-3.png",
     fullImage: "/images/check-3.png",
     discountedAmount: 875_320_500,

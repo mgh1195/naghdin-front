@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ShoppingCart, ImageIcon, ShieldCheck, X, Trash2 } from "lucide-react"
+import { ShoppingCart, ImageIcon, ShieldCheck, X, Trash2, Check as CheckIcon } from "lucide-react"
 import type { Check } from "@/data/opportunities"
 import { faNumber, toFa } from "@/lib/utils"
 import { useCart } from "@/context/CartContext"
@@ -47,19 +47,19 @@ export default function CheckCard({ item }: { item: Check }) {
         </h3>
 
         <div className="mt-4 flex flex-col gap-3">
-          <div className="flex flex-col gap-1 border-b border-border/70 pb-3">
+          <div className="flex items-center justify-between border-b border-border/70 pb-3">
             <span className="text-xs text-muted-foreground">مبلغ پس از تنزل</span>
             <span className="font-num text-sm font-semibold text-foreground">
               {faNumber(item.discountedAmount)} تومان
             </span>
           </div>
-          <div className="flex flex-col gap-1 border-b border-border/70 pb-3">
+          <div className="flex items-center justify-between border-b border-border/70 pb-3">
             <span className="text-xs text-muted-foreground">سود سرمایه‌گذاری</span>
             <span className="font-num text-sm font-semibold text-primary">
               {toFa(item.profit)}٪
             </span>
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex items-center justify-between">
             <span className="text-xs text-muted-foreground">ضامن</span>
             <span className="text-sm font-medium leading-relaxed text-foreground">
               {item.guarantor}
@@ -70,7 +70,7 @@ export default function CheckCard({ item }: { item: Check }) {
         {/* دکمه افزودن به سبد خرید */}
         <button
           type="button"
-          onClick={() => setInCart((v) => !v)}
+          onClick={() => toggleCart(item.id)}
           className={`mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-colors ${
             inCart
               ? "bg-accent text-accent-foreground"
