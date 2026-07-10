@@ -16,7 +16,7 @@ import client from "../client"
 //  5. Export typed response interfaces so callers get full type safety.
 // =============================================================================
 
-export interface User {
+export interface UserEntity {
   id: number
   name: string
   email: string
@@ -33,7 +33,7 @@ export interface User {
  *   const { data } = await getUser(42)
  */
 export function getUser(id: number) {
-  return client.get<User>(`/users/${id}`)
+  return client.get<UserEntity>(`/users/${id}`)
 }
 
 // POST /users ------------------------------------------------------------------
@@ -44,15 +44,15 @@ export function getUser(id: number) {
  *   import { createUser } from "@/api/endpoints/users.api"
  *   await createUser({ name: "Ali", email: "ali@example.com" })
  */
-export function createUser(data: Omit<User, "id" | "createdAt">) {
-  return client.post<User>("/users", data)
+export function createUser(data: Omit<UserEntity, "id" | "createdAt">) {
+  return client.post<UserEntity>("/users", data)
 }
 
 // ------------------------------------------------------------------------------
 //  To add a NEW resource (e.g. products):
 //
 //  1. Copy this file → src/api/endpoints/products.api.ts
-//  2. Replace "User" with "Product" everywhere.
+//  2. Replace "UserEntity" with your resource name everywhere.
 //  3. Replace `/users` with `/products` in URLs.
 //  4. Adjust the interface fields to match your Product schema.
 // ------------------------------------------------------------------------------

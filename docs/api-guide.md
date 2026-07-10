@@ -67,8 +67,50 @@ const { data } = await getProducts()
 
 ## 4. Auth Token Interceptor
 
-The request interceptor in `src/api/client.ts` currently reads a token from `localStorage` under the key `sarmaye_token`. This is a **placeholder**.
+The request interceptor in `src/api/client.ts:18` reads the JWT from `localStorage` under the key `sarmaye_token`. This token is written by `AuthContext.login()` on a successful login and cleared by `AuthContext.logout()`.
 
-When real authentication is wired up:
-- Update the token source in `src/api/client.ts:18` to read from your actual auth state (context, secure cookie, or dedicated token manager).
-- If auth is managed via `src/context/AuthContext.tsx`, consider exporting a `getToken()` helper from that module and calling it inside the interceptor.
+The interceptor is fully wired — any request made through the shared `client` instance automatically includes the `Authorization: Bearer <token>` header while a user is logged in.
+
+## 5. Login Flow (Phone + OTP)
+
+The login flow has been migrated from fake/mock logic to real API calls. Both endpoints live in `src/api/endpoints/auth.api.ts`.
+
+### Endpoints
+
+| Step | Method | Path | Request body | Success |
+|------|--------|------|-------------|---------|
+| Send code | `POST` | `/api/auth/v1/verification-code` | `{ "id": "09…" }` | 204 No Content |
+| Verify code | `POST` | `/api/auth/v1/login` | `{ "id": "09…", "code": "123456" }` | 200 with `{ token, currentUser }` |
+
+### Token & user storage
+
+On successful login, `AuthContext.login()` persists three values to `localStorage`:
+
+| Key | Value |
+|-----|-------|
+| `sarmaye_token` | JWT string |
+| `sarmaye_phone` | Phone number used to log in |
+| `sarmaye_current_user` | `CurrentUser` object (JSON-serialized) |
+
+Any component can access them via the `useAuth()` hook:
+
+```tsx
+import { useAuth } from "@/context/AuthContext"
+
+function SomeComponent() {
+  const { token, phone, currentUser, isAuthenticated, login, logout } = useAuth()
+  // …
+}
+```
+
+### `currentUser` type — optional fields
+
+All fields inside `currentUser` (and its nested objects `user`, `person`, `company`, `metadata`, `inquiryResponse`) are typed as **optional** in `src/api/endpoints/auth.api.ts`. The backend may add or remove fields at any time. Components consuming `currentUser` should use optional chaining and handle `undefined` gracefully:
+
+```tsx
+const name = currentUser?.person?.firstName ?? currentUser?.user?.username ?? "کاربر"
+```
+
+### Error handling — NOT yet implemented
+
+When `POST /api/auth/v1/verification-code` returns non-204, or `POST /api/auth/v1/login` returns non-200, the UI currently stays on the current screen with no specific error feedback. The loading state stops (button re-enables) but no message is shown. Implementing proper error UI for these cases is a future task.

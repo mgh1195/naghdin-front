@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { Loader2, ArrowRight } from "lucide-react"
-import { sendOtp, verifyOtp } from "@/services/auth"
+import { sendVerificationCode, verifyOtp } from "@/api/endpoints/auth.api"
 import { useAuth } from "@/context/AuthContext"
 import { normalizeDigits } from "@/lib/utils"
 
@@ -25,7 +25,6 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
   const [phone, setPhone] = useState("")
   const [touched, setTouched] = useState(false)
   const [sending, setSending] = useState(false)
-  const [sendError, setSendError] = useState<string | null>(null)
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [countdown, setCountdown] = useState(120)
@@ -45,13 +44,12 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
   const handleSendOtp = async () => {
     if (!valid || sending) return
     setSending(true)
-    setSendError(null)
     try {
-      await sendOtp(phone)
-      setStep("otp")
-      setCountdown(120)
-    } catch {
-      setSendError("ارسال کد با خطا مواجه شد. لطفاً مجدداً تلاش کنید.")
+      const ok = await sendVerificationCode(phone)
+      if (ok) {
+        setStep("otp")
+        setCountdown(120)
+      }
     } finally {
       setSending(false)
     }
@@ -61,12 +59,12 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
     if (resending) return
     setResending(true)
     try {
-      await sendOtp(phone)
-      setOtp(["", "", "", "", "", ""])
-      setCountdown(120)
-      inputRefs.current[0]?.focus()
-    } catch {
-      setSendError("ارسال مجدد با خطا مواجه شد. لطفاً مجدداً تلاش کنید.")
+      const ok = await sendVerificationCode(phone)
+      if (ok) {
+        setOtp(["", "", "", "", "", ""])
+        setCountdown(120)
+        inputRefs.current[0]?.focus()
+      }
     } finally {
       setResending(false)
     }
@@ -77,9 +75,13 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
     setVerifying(true)
     setVerifyError(null)
     try {
-      const { token } = await verifyOtp(phone, otp.join(""))
-      login(token, phone)
-      onSuccess?.()
+      const { token, currentUser } = await verifyOtp(phone, otp.join(""))
+      if (token) {
+        login(token, phone, currentUser)
+        onSuccess?.()
+      } else {
+        setVerifyError("کد وارد شده نامعتبر است. لطفاً مجدداً تلاش کنید.")
+      }
     } catch {
       setVerifyError("کد وارد شده نامعتبر است. لطفاً مجدداً تلاش کنید.")
     } finally {
@@ -159,16 +161,13 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
                 dir="ltr"
                 disabled={sending}
                 className={`mt-1.5 block w-full rounded-xl border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition-colors focus:ring-1 disabled:cursor-not-allowed disabled:opacity-60 ${
-                  validationError || sendError
+                  validationError
                     ? "border-primary/40 focus:border-primary focus:ring-primary/30"
                     : "border-border focus:border-primary focus:ring-primary/30"
                 }`}
               />
               {validationError && (
                 <p className="mt-1.5 text-xs text-accent">{validationError}</p>
-              )}
-              {sendError && (
-                <p className="mt-1.5 text-xs text-accent">{sendError}</p>
               )}
             </div>
 
