@@ -40,3 +40,23 @@ export async function verifyOtp(
   })
   return data
 }
+
+// POST /api/auth/v1/logout ------------------------------------------------------
+/**
+ * Log the current user out on the server.
+ *
+ * The stored JWT is attached automatically by the request interceptor
+ * in `src/api/client.ts`.
+ *
+ * Returns `true` when the server responds with 204 No Content.
+ * Returns `false` for any other status — the caller should NOT clear
+ * local auth state.
+ */
+export async function logout(): Promise<boolean> {
+  try {
+    await client.post("/api/auth/v1/logout")
+    return true
+  } catch {
+    return false
+  }
+}

@@ -10,11 +10,9 @@ const client = axios.create({
 })
 
 // ---------------------------------------------------------------------------
-// Request interceptor — attach auth token when available
+// Request interceptor — attach auth token on every outgoing request
 // ---------------------------------------------------------------------------
 client.interceptors.request.use((config) => {
-  // TODO: Replace localStorage key with your actual auth token storage once
-  //       authentication is wired up (e.g. cookies, secure storage, context).
   const token = localStorage.getItem("sarmaye_token")
   if (token) {
     config.headers.Authorization = `Bearer ${token}`

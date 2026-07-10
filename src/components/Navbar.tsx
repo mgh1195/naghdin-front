@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Menu, X, TrendingUp, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
@@ -17,6 +17,7 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
   const visible = scrolled || alwaysSolid
   const { isAuthenticated, phone, logout } = useAuth()
   const { pathname } = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (alwaysSolid) return
@@ -90,7 +91,10 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
               </span>
               <button
                 type="button"
-                onClick={() => logout()}
+                onClick={async () => {
+                  const ok = await logout()
+                  if (ok) navigate("/login", { replace: true })
+                }}
                 className={cn(
                   "flex size-9 items-center justify-center rounded-lg transition-colors",
                   visible
@@ -161,9 +165,10 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
               <li className="mt-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    logout()
+                  onClick={async () => {
+                    const ok = await logout()
                     setOpen(false)
+                    if (ok) navigate("/login", { replace: true })
                   }}
                   className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
                 >

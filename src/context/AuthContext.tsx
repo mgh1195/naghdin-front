@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
 import { getToken, setToken as saveToken, clearToken } from "@/services/http"
 import type { CurrentUser } from "@/types/auth.types"
+import { logout as apiLogout } from "@/api/endpoints/auth.api"
 
 const PHONE_KEY = "sarmaye_phone"
 const CURRENT_USER_KEY = "sarmaye_current_user"
@@ -40,7 +41,7 @@ interface AuthContextValue {
   currentUser: CurrentUser | null
   isAuthenticated: boolean
   login: (token: string, phone: string, currentUser?: CurrentUser) => void
-  logout: () => void
+  logout: () => Promise<boolean>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -64,13 +65,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async (): Promise<boolean> => {
+    const ok = await apiLogout()
+    if (!ok) return false
     clearToken()
     clearPhone()
     clearCurrentUser()
     setTokenState(null)
     setPhoneState(null)
     setCurrentUserState(null)
+    return true
   }, [])
 
   return (
