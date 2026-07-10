@@ -134,7 +134,7 @@ export default function ProjectDetails() {
             <div className="mt-4 flex flex-col">
               <div className="flex items-center justify-between border-b border-border/70 py-3">
                 <span className="text-xs text-muted-foreground">مبلغ کل تامین‌مالی</span>
-                <span className="font-num text-sm font-semibold text-foreground">{project.totalFundingLabel}</span>
+                <span className="font-num text-sm font-semibold text-foreground">{faNumber(project.totalFunding)} ریال</span>
               </div>
               <div className="flex items-center justify-between border-b border-border/70 py-3">
                 <span className="text-xs text-muted-foreground">سود میانگین ماهانه</span>
@@ -231,7 +231,7 @@ export default function ProjectDetails() {
                       <th className="whitespace-nowrap px-4 py-3 md:px-5">مبلغ چک (ریال)</th>
                       <th className="whitespace-nowrap px-4 py-3 md:px-5">صادر کننده چک</th>
                       <th className="whitespace-nowrap px-4 py-3 md:px-5">شناسه صیاد</th>
-                      <th className="whitespace-nowrap px-4 py-3 md:px-5">قیمت خرید چک</th>
+                      <th className="whitespace-nowrap px-4 py-3 md:px-5">قیمت خرید چک (ریال)</th>
                       <th className="whitespace-nowrap px-4 py-3 md:px-5">عملیات</th>
                     </tr>
                   </thead>

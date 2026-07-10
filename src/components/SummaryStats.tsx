@@ -86,24 +86,24 @@ export default function SummaryStats() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    let cancelled = false
+    const controller = new AbortController()
     setLoading(true)
     setError(false)
 
-    getOverallStatistics()
+    getOverallStatistics(controller.signal)
       .then((res) => {
-        if (!cancelled) setData(res)
+        setData(res)
       })
-      .catch(() => {
-        if (!cancelled) setError(true)
+      .catch((err) => {
+        if (err?.name === "CanceledError") return
+        console.error("[SummaryStats] fetch failed:", err)
+        setError(true)
       })
       .finally(() => {
-        if (!cancelled) setLoading(false)
+        setLoading(false)
       })
 
-    return () => {
-      cancelled = true
-    }
+    return () => controller.abort()
   }, [])
 
   const stats = data ? buildStats(data) : null

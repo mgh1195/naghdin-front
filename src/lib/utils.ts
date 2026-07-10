@@ -19,11 +19,14 @@ export function normalizeDigits(value: string): string {
 }
 
 /** Convert a number/string to Persian digits. */
-export function toFa(value: number | string): string {
+export function toFa(value: number | string | null | undefined): string {
+  if (value === null || value === undefined) return "—"
   return String(value).replace(/\d/g, (d) => faDigits[Number(d)])
 }
 
-/** Format an integer with thousands separators, then Persian digits. */
-export function faNumber(value: number): string {
+/** Format an integer with thousands separators, then Persian digits.
+ *  Returns "—" for null, undefined, or NaN. */
+export function faNumber(value: number | null | undefined): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "—"
   return toFa(value.toLocaleString("en-US"))
 }
