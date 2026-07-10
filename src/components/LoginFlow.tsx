@@ -41,6 +41,11 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
   const valid = isValidIranianPhone(phone)
   const otpComplete = otp.every((d) => d !== "")
 
+  const resetOtpState = useCallback(() => {
+    setOtp(["", "", "", "", "", ""])
+    setVerifyError(null)
+  }, [])
+
   const handleSendOtp = async () => {
     if (!valid || sending) return
     setSending(true)
@@ -122,6 +127,13 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
     const id = setInterval(() => setCountdown((v) => v - 1), 1000)
     return () => clearInterval(id)
   }, [step, countdown])
+
+  // Clear OTP state when the countdown expires
+  useEffect(() => {
+    if (step === "otp" && countdown === 0) {
+      resetOtpState()
+    }
+  }, [step, countdown, resetOtpState])
 
   useEffect(() => {
     if (step === "otp") {
@@ -218,7 +230,10 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
             <div className="flex items-center justify-between text-sm">
               <button
                 type="button"
-                onClick={() => setStep("phone")}
+                onClick={() => {
+                  resetOtpState()
+                  setStep("phone")
+                }}
                 className="inline-flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
               >
                 <ArrowRight className="size-4" />
