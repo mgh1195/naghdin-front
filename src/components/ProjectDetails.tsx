@@ -436,7 +436,7 @@ export default function ProjectDetails() {
               aria-label="فایل ارزیابی"
             >
               <div
-                className="relative flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-card"
+                className="relative flex max-h-[85vh] w-full max-w-4xl flex-col overflow-clip rounded-2xl bg-card"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -450,10 +450,10 @@ export default function ProjectDetails() {
                     <X className="size-5" />
                   </button>
                 </div>
-                <div className="flex-1 overflow-auto bg-muted p-4">
+                <div className="min-h-0 flex-1 overflow-auto bg-muted p-4">
                   <iframe
                     src={project.evaluationPdfUrl}
-                    className="mx-auto h-[70vh] w-full rounded-lg border-0"
+                    className="mx-auto h-[40vh] w-full rounded-lg border-0 sm:h-[70vh]"
                     title="فایل ارزیابی"
                   />
                 </div>
@@ -471,7 +471,7 @@ export default function ProjectDetails() {
               aria-label={docModal.title}
             >
               <div
-                className="relative flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-card"
+                className="relative flex max-h-[85vh] w-full max-w-4xl flex-col overflow-clip rounded-2xl bg-card"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -485,7 +485,7 @@ export default function ProjectDetails() {
                     <X className="size-5" />
                   </button>
                 </div>
-                <div className="flex-1 overflow-auto bg-muted p-4">
+                <div className="min-h-0 flex-1 overflow-auto bg-muted p-4">
                   {docModal.type === "image" ? (
                     <img
                       src={docModal.url}
@@ -495,7 +495,7 @@ export default function ProjectDetails() {
                   ) : (
                     <iframe
                       src={docModal.url}
-                      className="mx-auto h-[70vh] w-full rounded-lg border-0"
+                      className="mx-auto h-[40vh] w-full rounded-lg border-0 sm:h-[70vh]"
                       title={docModal.title}
                     />
                   )}

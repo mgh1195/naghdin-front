@@ -6,6 +6,7 @@ import SummaryStats from "./components/SummaryStats"
 import Opportunities from "./components/Opportunities"
 import ProjectDetails from "./components/ProjectDetails"
 import LoginPage from "./components/LoginPage"
+import CheckoutPage from "./components/CheckoutPage"
 import Footer from "./components/Footer"
 import FloatingCartButton from "./components/FloatingCartButton"
 import { CartProvider } from "./context/CartContext"
@@ -44,6 +45,7 @@ export default function App() {
           />
           <Route path="/projects/:id" element={<ProjectDetails />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
         </Routes>
         {pathname !== "/login" && <Footer />}
         <FloatingCartButton />

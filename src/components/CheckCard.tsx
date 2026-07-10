@@ -103,7 +103,7 @@ export default function CheckCard({ item }: { item: Check }) {
           aria-label={`تصویر ${item.title}`}
         >
           <div
-            className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-card"
+            className="relative w-full max-w-3xl overflow-clip rounded-2xl bg-card"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-border px-5 py-4">

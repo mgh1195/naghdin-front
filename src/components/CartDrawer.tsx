@@ -1,9 +1,11 @@
 import { X, Trash2 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { useCart } from "@/context/CartContext"
 import { faNumber, toFa } from "@/lib/utils"
 
 export default function CartDrawer() {
   const { drawerOpen, closeDrawer, cart, loading, removeFromCart } = useCart()
+  const navigate = useNavigate()
 
   if (!drawerOpen) return null
 
@@ -88,7 +90,7 @@ export default function CartDrawer() {
                 </li>
               ))}
             </ul>
-            <CartSummary cart={cart} />
+            <CartSummary cart={cart} onCheckout={() => { closeDrawer(); navigate("/checkout") }} />
           </>
         ) : (
           <div className="flex flex-1 items-center justify-center p-6">
@@ -102,7 +104,13 @@ export default function CartDrawer() {
   )
 }
 
-function CartSummary({ cart }: { cart: NonNullable<ReturnType<typeof useCart>["cart"]> }) {
+function CartSummary({
+  cart,
+  onCheckout,
+}: {
+  cart: NonNullable<ReturnType<typeof useCart>["cart"]>
+  onCheckout: () => void
+}) {
   return (
     <div className="shrink-0 border-t border-border bg-muted/40 px-6 py-4">
       <div className="flex items-center justify-between py-1.5">
@@ -126,9 +134,16 @@ function CartSummary({ cart }: { cart: NonNullable<ReturnType<typeof useCart>["c
       <div className="flex items-center justify-between py-1.5">
         <span className="text-xs text-muted-foreground">میانگین سود سرمایه‌گذاری</span>
         <span className="font-num text-sm font-semibold text-primary">
-          {toFa(cart.totalProfit)}٪
+          {toFa(cart.totalCount > 0 ? cart.totalProfit / cart.totalCount : 0)}٪
         </span>
       </div>
+      <button
+        type="button"
+        onClick={onCheckout}
+        className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+      >
+        نهایی‌سازی خرید
+      </button>
     </div>
   )
 }

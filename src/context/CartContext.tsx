@@ -30,6 +30,7 @@ interface CartContextValue {
   drawerOpen: boolean
   openDrawer: () => void
   closeDrawer: () => void
+  fetchCart: () => Promise<void>
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
@@ -123,8 +124,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
       drawerOpen,
       openDrawer,
       closeDrawer,
+      fetchCart,
     }),
-    [itemIds, cart, loading, error, addToCart, removeFromCart, toggleCart, drawerOpen, openDrawer, closeDrawer],
+    [itemIds, cart, loading, error, addToCart, removeFromCart, toggleCart, drawerOpen, openDrawer, closeDrawer, fetchCart],
   )
 
   return (

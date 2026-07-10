@@ -11,9 +11,12 @@ export interface Cart {
   items: CartItem[]
   totalCount: number
   totalDiscountedAmount: number
+  totalChequeAmountRial: number
+  totalProfit: number
+  weightedAverageDays: number
+  principalReturnDate: string | null
   earliestDueDate: string | null
   latestDueDate: string | null
-  totalProfit: number
 }
 
 // TODO: Replace with real API endpoint — POST /cart/add
@@ -81,15 +84,28 @@ function getMockCart(ids: string[]): Cart {
     .filter(Boolean) as CartItem[]
 
   const dates = items.map((i) => i.check.date).filter(Boolean)
-  // TODO: earliestDueDate and latestDueDate should come from the real API response
+  // TODO: All summary fields should come from the real API response
   return {
     items,
     totalCount: items.length,
     totalDiscountedAmount: items.reduce((sum, i) => sum + i.check.discountedAmount, 0),
+    totalChequeAmountRial: items.reduce((sum, i) => sum + i.check.chequeAmountRial, 0),
+    totalProfit: items.reduce((sum, i) => sum + i.check.profit, 0),
+    weightedAverageDays: items.length > 0 ? 60 : 0,
+    principalReturnDate: dates.length > 0 ? dates.sort()[dates.length - 1] : null,
     earliestDueDate: dates.length > 0 ? dates.sort()[0] : null,
     latestDueDate: dates.length > 0 ? dates.sort()[dates.length - 1] : null,
-    totalProfit: items.length > 0
-      ? items.reduce((sum, i) => sum + i.check.profit, 0) / items.length
-      : 0,
   }
+}
+
+// TODO: Replace with real API endpoint — POST /purchase/confirm
+export async function confirmPurchaseApi(checkIds: string[]): Promise<void> {
+  // TODO: Call actual API — example:
+  // const res = await apiFetch("/api/purchase/confirm", {
+  //   method: "POST",
+  //   body: JSON.stringify({ checkIds }),
+  // })
+  // if (!res.ok) throw new Error("خطا در نهایی‌سازی خرید")
+
+  await new Promise((resolve) => setTimeout(resolve, 1500))
 }
