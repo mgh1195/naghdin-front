@@ -73,12 +73,6 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
 
         {/* Desktop actions */}
         <div className="hidden items-center gap-3 md:flex">
-          <a
-            href="#opportunities"
-            className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-          >
-            شروع سرمایه‌گذاری
-          </a>
           {isAuthenticated ? (
             <>
               <span
@@ -152,15 +146,6 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
                 </a>
               </li>
             ))}
-            <li className="mt-2">
-              <a
-                href="#opportunities"
-                onClick={() => setOpen(false)}
-                className="block rounded-full bg-primary px-5 py-3 text-center text-sm font-semibold text-primary-foreground"
-              >
-                شروع سرمایه‌گذاری
-              </a>
-            </li>
             {isAuthenticated ? (
               <li className="mt-2">
                 <button

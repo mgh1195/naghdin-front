@@ -188,9 +188,4 @@ export function getChecks(status: OpportunityStatusFilter): Check[] {
   return checks.filter((item) => item.status === status)
 }
 
-export const summaryStats = [
-  { label: "مجموع سرمایه جذب‌شده", value: "۱۲,۴۰۰", unit: "میلیارد ریال" },
-  { label: "پروژه‌های تامین‌مالی‌شده", value: "۳۸", unit: "پروژه" },
-  { label: "سرمایه‌گذاران فعال", value: "۹,۶۵۰", unit: "نفر" },
-  { label: "سود پرداختی به سرمایه‌گذاران", value: "۱,۸۷۰", unit: "میلیارد ریال" },
-]
+
