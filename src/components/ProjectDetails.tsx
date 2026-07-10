@@ -1,16 +1,15 @@
-import { useMemo, useState } from "react"
-import { ArrowLeft, ArrowRight, ShoppingCart, Trash2, Building2, FileText, MapPin, X, FileDown, FileImage, File } from "lucide-react"
+import { useEffect, useState } from "react"
+import { ArrowLeft, ArrowRight, ShoppingCart, Trash2, Building2, FileText, MapPin, X, FileImage, File } from "lucide-react"
 import { Link, useParams } from "react-router-dom"
-import {
-  getChecks,
-  getOpportunityById,
-  type OpportunityStatusFilter,
-} from "@/data/opportunities"
+import type { Opportunity } from "@/data/opportunities"
 import { cn, faNumber, toFa } from "@/lib/utils"
 import { useCart } from "@/context/CartContext"
 import { useAuthGuard } from "@/context/AuthModalContext"
+import { getProjectById } from "@/api/endpoints/landing.api"
+import { mapApiProject, mapChequeToCheck } from "@/api/adapters/project.adapter"
 import CheckCard from "./CheckCard"
 import GuarantorBar from "./GuarantorBar"
+import ErrorBoundary from "./ErrorBoundary"
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -21,17 +20,86 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   )
 }
 
+type ViewMode = "card" | "table"
+
+function ProjectSkeleton() {
+  return (
+    <main className="mx-auto max-w-7xl px-5 py-20 md:px-8">
+      <div className="h-6 w-32 animate-pulse rounded bg-muted" />
+      <div className="mt-6 overflow-hidden rounded-3xl border border-border bg-card">
+        <div className="flex flex-col md:flex-row">
+          <div className="h-72 animate-pulse bg-muted md:h-auto md:w-2/3 md:shrink-0" />
+          <div className="flex flex-col gap-4 p-6 md:p-8 md:w-1/3">
+            <div className="flex gap-4">
+              <div className="size-14 shrink-0 animate-pulse rounded-2xl bg-muted" />
+              <div className="flex flex-1 flex-col gap-3">
+                <div className="h-6 w-3/4 animate-pulse rounded bg-muted" />
+                <div className="h-4 w-full animate-pulse rounded bg-muted" />
+              </div>
+            </div>
+            <div className="h-2.5 w-full animate-pulse rounded-full bg-muted" />
+            <div className="space-y-3">
+              <div className="h-12 animate-pulse rounded bg-muted" />
+              <div className="h-12 animate-pulse rounded bg-muted" />
+              <div className="h-12 animate-pulse rounded bg-muted" />
+              <div className="h-12 animate-pulse rounded bg-muted" />
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-border/70 p-6 md:p-8">
+          <div className="h-10 w-48 animate-pulse rounded-full bg-muted" />
+          <div className="mt-8 grid grid-cols-3 gap-6">
+            <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+            <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+            <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
+
 export default function ProjectDetails() {
   const { id } = useParams<{ id: string }>()
-  const project = id ? getOpportunityById(id) : undefined
+  const [project, setProject] = useState<Opportunity | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [activeTab, setActiveTab] = useState<string>("company")
+  const [docModal, setDocModal] = useState<{ title: string; url: string; type: string } | null>(null)
+  const [viewMode, setViewMode] = useState<ViewMode>("card")
+  const { isInCart, addToCart, removeFromCart } = useCart()
+  const { authenticate } = useAuthGuard()
 
-  if (!project) {
+  useEffect(() => {
+    if (!id) {
+      setLoading(false)
+      return
+    }
+    const controller = new AbortController()
+    setLoading(true)
+    setError(false)
+
+    getProjectById(id, controller.signal)
+      .then((apiProject) => setProject(mapApiProject(apiProject)))
+      .catch((err) => {
+        if (err?.name === "CanceledError") return
+        console.error("[ProjectDetails] fetch failed:", err)
+        setError(true)
+      })
+      .finally(() => setLoading(false))
+
+    return () => controller.abort()
+  }, [id])
+
+  if (loading) return <ProjectSkeleton />
+
+  if (error || !project) {
     return (
       <main className="mx-auto max-w-7xl px-5 py-20 md:px-8">
         <div className="rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center">
-          <h1 className="text-2xl font-bold text-foreground">پروژه مورد نظر یافت نشد</h1>
+          <h1 className="text-2xl font-bold text-foreground">پروژه یافت نشد</h1>
           <p className="mt-3 text-muted-foreground">
-            پروژه‌ای با شناسه «{id}» وجود ندارد.
+            {id ? `پروژه‌ای با شناسه «${id}» وجود ندارد یا در دریافت آن خطایی رخ داده است.` : "شناسه پروژه نامعتبر است."}
           </p>
           <Link
             to="/"
@@ -46,28 +114,13 @@ export default function ProjectDetails() {
   }
 
   const isClosed = project.status === "closed"
+  const checks = (project.cheques ?? []).map(mapChequeToCheck)
 
   const documents = [
     { title: "طرح توجیهی پروژه", url: project.evaluationPdfUrl, type: "pdf" },
     { title: "تصویر پروانه بهره‌برداری", url: "/images/project-energy.png", type: "image" },
     { title: "گزارش مالی فصلی", url: "/docs/financial-report.pdf", type: "pdf" },
   ]
-
-  const statusFilters: { value: OpportunityStatusFilter; label: string }[] = [
-    { value: "open", label: "در حال تامین سرمایه" },
-    { value: "closed", label: "خاتمه یافته" },
-    { value: "all", label: "همه" },
-  ]
-  const [activeTab, setActiveTab] = useState<string>("company")
-  const [evaluationModalOpen, setEvaluationModalOpen] = useState(false)
-  const [docModal, setDocModal] = useState<{ title: string; url: string; type: string } | null>(null)
-  const [checkStatus, setCheckStatus] = useState<OpportunityStatusFilter>("open")
-  const filteredChecks = useMemo(() => getChecks(checkStatus), [checkStatus])
-
-  type ViewMode = "card" | "table"
-  const [viewMode, setViewMode] = useState<ViewMode>("card")
-  const { isInCart, addToCart, removeFromCart } = useCart()
-  const { authenticate } = useAuthGuard()
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-20 md:px-8">
@@ -81,7 +134,6 @@ export default function ProjectDetails() {
 
       <div className="mt-6 overflow-hidden rounded-3xl border border-border bg-card">
         <div className="flex flex-col md:flex-row">
-          {/* Image side — first in DOM, so in RTL flex-row it lands on the right */}
           <div className="relative h-72 md:h-auto md:w-2/3 md:shrink-0">
             <img
               src={project.image || "/placeholder.svg"}
@@ -95,12 +147,11 @@ export default function ProjectDetails() {
                   : "bg-accent text-accent-foreground"
               }`}
             >
-              {isClosed ? "تکمیل شده" : "در حال جذب سرمایه"}
+              {project.stateLabel || (isClosed ? "تکمیل شده" : "در حال جذب سرمایه")}
             </span>
             <GuarantorBar guarantor={project.guarantor} />
           </div>
 
-          {/* Content side — second in DOM, so in RTL flex-row it lands on the left */}
           <div className="flex flex-col p-6 md:p-8 md:w-1/3 md:shrink-0">
             <div className="flex items-start gap-4">
               <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-sm font-bold text-primary">
@@ -153,71 +204,41 @@ export default function ProjectDetails() {
                 </span>
               </div>
             </div>
-
           </div>
         </div>
 
-        <div className="border-t border-border/70 p-6 md:p-8">
-
-          <div className="mt-6 inline-flex rounded-full border border-border bg-card p-1">
-            <button
-              type="button"
-              onClick={() => setViewMode("card")}
-              className={cn(
-                "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
-                viewMode === "card"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              کارت چک
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("table")}
-              className={cn(
-                "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
-                viewMode === "table"
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              جدول چک
-            </button>
-          </div>
-
-          <div className="mt-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div className="flex flex-wrap items-center gap-2">
-              {statusFilters.map((filter) => (
-                <button
-                  key={filter.value}
-                  type="button"
-                  onClick={() => setCheckStatus(filter.value)}
-                  className={cn(
-                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
-                    checkStatus === filter.value
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-            {viewMode === "card" && (
-              <a
-                href="#"
-                className="shrink-0 rounded-full border border-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-background"
+        {checks.length > 0 && (
+          <div className="border-t border-border/70 p-6 md:p-8">
+            <div className="mt-6 inline-flex rounded-full border border-border bg-card p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("card")}
+                className={cn(
+                  "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
+                  viewMode === "card"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
               >
-                مشاهده همه چک‌ها
-              </a>
-            )}
-          </div>
+                کارت چک
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={cn(
+                  "rounded-full px-5 py-2 text-sm font-semibold transition-colors",
+                  viewMode === "table"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                جدول چک
+              </button>
+            </div>
 
-          {filteredChecks.length > 0 ? (
-            viewMode === "card" ? (
+            {viewMode === "card" ? (
               <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {filteredChecks.slice(0, 3).map((item) => (
+                {checks.slice(0, 3).map((item) => (
                   <CheckCard key={item.id} item={item} />
                 ))}
               </div>
@@ -236,7 +257,7 @@ export default function ProjectDetails() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredChecks.slice(0, 3).map((item, idx) => {
+                    {checks.slice(0, 3).map((item, idx) => {
                       const inCart = isInCart(item.id)
                       return (
                         <tr key={item.id} className="border-b border-border last:border-b-0">
@@ -285,15 +306,9 @@ export default function ProjectDetails() {
                   </tbody>
                 </table>
               </div>
-            )
-          ) : (
-            <div className="mt-8 rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center">
-              <p className="text-muted-foreground">
-                در حال حاضر چکی با این وضعیت موجود نیست.
-              </p>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         <div className="border-t border-border/70 p-6 md:p-8">
           <div className="inline-flex rounded-full border border-border bg-card p-1">
@@ -324,7 +339,7 @@ export default function ProjectDetails() {
                   <span className="text-sm font-medium text-foreground">نام شرکت</span>
                 </div>
                 <span className="text-sm font-semibold text-foreground">
-                  {project.companyName}
+                  {project.companyName || "—"}
                 </span>
               </div>
 
@@ -334,7 +349,7 @@ export default function ProjectDetails() {
                   <span className="text-sm font-medium text-foreground">آدرس</span>
                 </div>
                 <span className="text-sm font-medium leading-relaxed text-foreground">
-                  {project.address}
+                  {project.address || "—"}
                 </span>
               </div>
 
@@ -345,7 +360,7 @@ export default function ProjectDetails() {
                 </div>
                 <div className="mt-3 rounded-xl bg-muted/40 p-4">
                   <p className="text-sm leading-relaxed text-foreground">
-                    {project.planIntro}
+                    {project.planIntro || "—"}
                   </p>
                 </div>
               </div>
@@ -370,7 +385,7 @@ export default function ProjectDetails() {
                   <span className="text-sm font-medium text-foreground">رتبه اعتباری</span>
                 </div>
                 <span className="text-sm font-semibold text-foreground">
-                  {project.creditRating}
+                  {project.creditRating || "—"}
                 </span>
               </div>
 
@@ -426,42 +441,6 @@ export default function ProjectDetails() {
             </div>
           )}
 
-          {/* Evaluation PDF modal */}
-          {evaluationModalOpen && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 backdrop-blur-sm p-4"
-              onClick={() => setEvaluationModalOpen(false)}
-              role="dialog"
-              aria-modal="true"
-              aria-label="فایل ارزیابی"
-            >
-              <div
-                className="relative flex max-h-[85vh] w-full max-w-4xl flex-col overflow-clip rounded-2xl bg-card"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                  <span className="text-sm font-bold text-foreground">فایل ارزیابی</span>
-                  <button
-                    type="button"
-                    onClick={() => setEvaluationModalOpen(false)}
-                    className="flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    aria-label="بستن"
-                  >
-                    <X className="size-5" />
-                  </button>
-                </div>
-                <div className="min-h-0 flex-1 overflow-auto bg-muted p-4">
-                  <iframe
-                    src={project.evaluationPdfUrl}
-                    className="mx-auto h-[40vh] w-full rounded-lg border-0 sm:h-[70vh]"
-                    title="فایل ارزیابی"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Document modal */}
           {docModal && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/70 backdrop-blur-sm p-4"

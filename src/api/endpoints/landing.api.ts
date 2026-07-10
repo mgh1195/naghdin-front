@@ -76,3 +76,15 @@ export async function getProjects(
   )
   return data.elements
 }
+
+export async function getProjectById(
+  hashedId: string,
+  signal?: AbortSignal,
+): Promise<ApiProject> {
+  const { data } = await client.get<ApiProject>(
+    `/v1/landing/projects/${hashedId}`,
+    { signal },
+  )
+  console.log("[getProjectById] raw response:", data)
+  return data
+}

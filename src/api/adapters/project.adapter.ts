@@ -1,7 +1,8 @@
 import type { ApiProject } from "@/api/endpoints/landing.api"
 import { PROJECT_STATE_LABELS, isClosedState } from "@/api/endpoints/landing.api"
-import type { Opportunity } from "@/data/opportunities"
+import type { Opportunity, Check } from "@/data/opportunities"
 import type { Guarantor } from "@/types/guarantor.types"
+import type { Cheque } from "@/types/cheque.types"
 import { API_BASE_URL } from "@/config/api.config"
 
 function safeString(v: unknown): string {
@@ -44,11 +45,13 @@ function resolveImageUrl(p: ApiProject): string {
  */
 export function mapApiProject(p: ApiProject): Opportunity {
   console.log("[adapter] raw guarantor:", p.guarantor)
+  console.log("[adapter] raw cheques:", p.cheques)
 
+  const cheques = Array.isArray(p.cheques) ? p.cheques : []
   const totalFunding =
-    p.cheques
-      ?.filter((c) => c.status === "PAID")
-      .reduce((sum, c) => sum + c.amount, 0) ?? p.totalFunding ?? 0
+    cheques
+      .filter((c) => c.status === "PAID")
+      .reduce((sum, c) => sum + c.amount, 0) || p.totalFunding || 0
 
   return {
     id: safeString(p.id),
@@ -60,7 +63,7 @@ export function mapApiProject(p: ApiProject): Opportunity {
     stateLabel: PROJECT_STATE_LABELS[p.state] ?? "",
     guarantor: p.guarantor as Guarantor,
     company: p.company,
-    cheques: p.cheques,
+    cheques: Array.isArray(p.cheques) && p.cheques.length > 0 ? p.cheques : undefined,
     fundedPercent: p.fundedPercent ?? 0,
     totalFunding,
     totalFundingLabel: "",
@@ -69,11 +72,29 @@ export function mapApiProject(p: ApiProject): Opportunity {
     daysTo: p.daysTo ?? 0,
     amountFrom: p.amountFrom ?? 0,
     amountTo: p.amountTo ?? 0,
-    companyName: "",
+    companyName: safeString(p.company?.name),
     planIntro: "",
     address: "",
     evaluationPdfUrl: "",
     hasBouncedCheque: false,
     creditRating: "",
+  }
+}
+
+export function mapChequeToCheck(c: Cheque): Check {
+  return {
+    id: c.id,
+    title: c.projectTitle ?? "",
+    image: "/placeholder.svg",
+    fullImage: "/placeholder.svg",
+    discountedAmount: c.investorAmount ?? 0,
+    profit: c.feePercent ?? 0,
+    guarantor: c.guarantorName ?? "",
+    status: c.status === "AVAILABLE" ? "open" : "closed",
+    date: c.dueDate ?? "",
+    chequeAmountRial: c.amount ?? 0,
+    issuer: c.issuerName ?? "",
+    sayadId: c.chequeId ?? "",
+    purchasePrice: c.investorAmount ?? 0,
   }
 }
