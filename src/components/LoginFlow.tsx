@@ -26,8 +26,8 @@ function formatTime(seconds: number): string {
 }
 
 function formatPhone(phone: string): string {
-  if (phone.length !== 11) return toFa(phone)
-  return toFa(`${phone.slice(0, 4)} ${phone.slice(4, 7)} ${phone.slice(7)}`)
+  if (phone.length !== 11) return phone
+  return `${phone.slice(0, 4)} ${phone.slice(4, 7)} ${phone.slice(7)}`
 }
 
 interface LoginFlowProps {
@@ -268,7 +268,11 @@ export default function LoginFlow({ onSuccess }: LoginFlowProps) {
         <>
           <div className="text-center">
             <StatusMessage tone="success">
-              کد تایید به شماره {formatPhone(phone)} ارسال شد.
+              کد تایید به شماره{" "}
+              <span dir="ltr" className="inline-block font-num font-bold text-primary">
+                {formatPhone(phone)}
+              </span>{" "}
+              ارسال شد.
             </StatusMessage>
           </div>
 
