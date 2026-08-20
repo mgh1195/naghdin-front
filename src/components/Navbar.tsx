@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { Menu, X, TrendingUp, LogOut } from "lucide-react"
+import { Menu, X, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/context/AuthContext"
+import BrandLogo from "./BrandLogo"
 
 const links = [
   { label: "خانه", href: "#hero" },
@@ -45,17 +46,10 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 md:px-8">
         {/* Logo */}
         <a href="#hero" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <TrendingUp className="size-5" />
-          </span>
-          <span
-            className={cn(
-              "text-lg font-bold tracking-tight transition-colors",
-              visible ? "text-foreground" : "text-white",
-            )}
-          >
-            سرمایه
-          </span>
+          <BrandLogo
+            wordmark
+            wordmarkClassName={visible ? "text-foreground" : "text-white"}
+          />
         </a>
 
         {/* Desktop links */}

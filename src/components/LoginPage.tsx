@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import { ShieldCheck, TrendingUp } from "lucide-react"
+import { ShieldCheck } from "lucide-react"
 import LoginFlow from "./LoginFlow"
+import BrandLogo from "./BrandLogo"
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -14,9 +15,7 @@ export default function LoginPage() {
       <section className="relative z-10 grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-border/80 bg-card/90 shadow-2xl shadow-foreground/5 backdrop-blur md:grid-cols-[1.05fr_0.95fr]">
         <div className="hidden flex-col justify-between bg-primary p-8 text-primary-foreground md:flex lg:p-10">
           <div>
-            <span className="inline-flex size-12 items-center justify-center rounded-2xl bg-primary-foreground/15 ring-1 ring-primary-foreground/20">
-              <TrendingUp className="size-7" />
-            </span>
+            <BrandLogo size="md" />
             <h1 className="mt-8 max-w-sm text-3xl font-black leading-tight lg:text-4xl">
               ورود امن به پنل سرمایه‌گذاری
             </h1>
@@ -41,9 +40,7 @@ export default function LoginPage() {
         <div className="px-5 py-7 sm:px-8 sm:py-9 lg:px-10">
           <div className="mx-auto w-full max-w-md">
             <div className="flex flex-col items-center text-center md:items-start md:text-right">
-              <span className="flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 md:hidden">
-                <TrendingUp className="size-7" />
-              </span>
+              <BrandLogo size="md" className="md:hidden" />
               <p className="mt-3 text-xs font-bold uppercase tracking-[0.3em] text-primary md:mt-0">
                 ورود
               </p>
