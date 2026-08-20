@@ -1,4 +1,5 @@
-import { TrendingUp, Phone, Mail, MapPin, Globe, Send, MessageCircle } from "lucide-react"
+import { Phone, Mail, MapPin, Globe, Send, MessageCircle } from "lucide-react"
+import BrandLogo from "./BrandLogo"
 
 const columns = [
   {
@@ -23,10 +24,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                <TrendingUp className="size-5" />
-              </span>
-              <span className="text-lg font-bold">سرمایه</span>
+              <BrandLogo wordmark />
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-background/70">
               پلتفرم تامین مالی جمعی و سرمایه‌گذاری در پروژه‌های فناورانه با

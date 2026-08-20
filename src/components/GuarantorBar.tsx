@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { Guarantor } from "@/types/guarantor.types"
-import { API_BASE_URL } from "@/config/api.config"
+import { buildFileUrl } from "@/lib/files"
 
 function extractName(g: Guarantor | string | undefined): string {
   if (!g) return ""
@@ -12,10 +12,7 @@ function resolveLogoUrl(g: Guarantor | string | undefined): string {
   if (!g || typeof g === "string") return "/sample-logo.png"
   const key = g.company?.logoKey
   if (!key) return "/sample-logo.png"
-  const base = API_BASE_URL.replace(/\/+$/, "")
-  const url = `${base}/files/v1/img/${key}`
-  console.log("[GuarantorBar] logo URL:", url)
-  return url
+  return buildFileUrl(key)
 }
 
 export default function GuarantorBar({ guarantor }: { guarantor: Guarantor | string | undefined }) {

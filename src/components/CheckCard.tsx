@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ShoppingCart, ImageIcon, ShieldCheck, X, Trash2, Check as CheckIcon } from "lucide-react"
+import { ShoppingCart, ImageIcon, ShieldCheck, X, Check as CheckIcon } from "lucide-react"
 import type { Check } from "@/data/opportunities"
 import { faNumber, toFa } from "@/lib/utils"
 import { useCart } from "@/context/CartContext"

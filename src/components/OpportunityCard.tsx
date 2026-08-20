@@ -41,10 +41,7 @@ export default function OpportunityCard({item}: { item: Opportunity }) {
                         src={imgSrc}
                         alt={item.title}
                         loading="lazy"
-                        onError={() => {
-                            console.warn("[OpportunityCard] img failed, falling back:", imgSrc)
-                            setImgSrc(PLACEHOLDER_SRC)
-                        }}
+                        onError={() => setImgSrc(PLACEHOLDER_SRC)}
                         className="size-full object-cover"
                     />
                     <span

@@ -18,10 +18,8 @@ import {
 import CartDrawer from "@/components/CartDrawer"
 
 interface CartContextValue {
-  items: Set<string>
   cart: Cart | null
   loading: boolean
-  error: string | null
   isInCart: (id: string) => boolean
   addToCart: (id: string) => Promise<void>
   removeFromCart: (id: string) => Promise<void>
@@ -40,7 +38,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [itemIds, setItemIds] = useState<Set<string>>(new Set())
   const [cart, setCart] = useState<Cart | null>(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const openDrawer = useCallback(() => setDrawerOpen(true), [])
@@ -49,12 +46,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const fetchCart = useCallback(async () => {
     try {
       setLoading(true)
-      setError(null)
       const data = await getCartApi()
       setCart(data)
       setItemIds(new Set(data.items.map((i) => i.check.id)))
     } catch {
-      setError("خطا در دریافت سبد خرید")
+      // A failed fetch keeps the previous cart state; the UI simply shows it.
     } finally {
       setLoading(false)
     }
@@ -67,37 +63,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } else {
       setCart(null)
       setItemIds(new Set())
-      setError(null)
     }
   }, [isAuthenticated, fetchCart])
 
-  const addToCart = useCallback(
-    async (id: string) => {
-      try {
-        setError(null)
-        const data = await addToCartApi(id)
-        setCart(data)
-        setItemIds(new Set(data.items.map((i) => i.check.id)))
-      } catch {
-        setError("خطا در افزودن به سبد خرید")
-      }
-    },
-    [],
-  )
+  const addToCart = useCallback(async (id: string) => {
+    try {
+      const data = await addToCartApi(id)
+      setCart(data)
+      setItemIds(new Set(data.items.map((i) => i.check.id)))
+    } catch {
+      // Cart update failures are intentionally silent for now (no error UI yet).
+    }
+  }, [])
 
-  const removeFromCart = useCallback(
-    async (id: string) => {
-      try {
-        setError(null)
-        const data = await removeFromCartApi(id)
-        setCart(data)
-        setItemIds(new Set(data.items.map((i) => i.check.id)))
-      } catch {
-        setError("خطا در حذف از سبد خرید")
-      }
-    },
-    [],
-  )
+  const removeFromCart = useCallback(async (id: string) => {
+    try {
+      const data = await removeFromCartApi(id)
+      setCart(data)
+      setItemIds(new Set(data.items.map((i) => i.check.id)))
+    } catch {
+      // Cart update failures are intentionally silent for now (no error UI yet).
+    }
+  }, [])
 
   const toggleCart = useCallback(
     async (id: string) => {
@@ -112,10 +99,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<CartContextValue>(
     () => ({
-      items: itemIds,
       cart,
       loading,
-      error,
       isInCart: (id: string) => itemIds.has(id),
       addToCart,
       removeFromCart,
@@ -126,7 +111,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       closeDrawer,
       fetchCart,
     }),
-    [itemIds, cart, loading, error, addToCart, removeFromCart, toggleCart, drawerOpen, openDrawer, closeDrawer, fetchCart],
+    [itemIds, cart, loading, addToCart, removeFromCart, toggleCart, drawerOpen, openDrawer, closeDrawer, fetchCart],
   )
 
   return (

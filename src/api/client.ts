@@ -1,5 +1,6 @@
 import axios from "axios"
 import { API_BASE_URL, TIMEOUT } from "../config/api.config"
+import { getToken } from "@/services/http"
 
 const client = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +14,7 @@ const client = axios.create({
 // Request interceptor — attach auth token on every outgoing request
 // ---------------------------------------------------------------------------
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem("sarmaye_token")
+  const token = getToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
