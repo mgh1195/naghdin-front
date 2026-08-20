@@ -3,7 +3,7 @@ import { PROJECT_STATE_LABELS, isClosedState } from "@/api/endpoints/landing.api
 import type { Opportunity, Check } from "@/data/opportunities"
 import type { Guarantor } from "@/types/guarantor.types"
 import type { Cheque } from "@/types/cheque.types"
-import { API_BASE_URL } from "@/config/api.config"
+import { buildFileUrl } from "@/lib/files"
 
 function safeString(v: unknown): string {
   if (typeof v === "string") return v
@@ -29,13 +29,7 @@ function safeString(v: unknown): string {
 }
 
 function resolveImageUrl(p: ApiProject): string {
-  if (p.imageFileKey) {
-    const key = encodeURIComponent(p.imageFileKey)
-    const base = API_BASE_URL.replace(/\/+$/, "")
-    const url = `${base}/files/v1/img/${key}`
-    console.log("[adapter] imageFileKey →", url)
-    return url
-  }
+  if (p.imageFileKey) return buildFileUrl(p.imageFileKey)
   if (p.image) return safeString(p.image)
   return "/placeholder.svg"
 }
@@ -44,9 +38,6 @@ function resolveImageUrl(p: ApiProject): string {
  * Maps an API project response to the shape expected by OpportunityCard.
  */
 export function mapApiProject(p: ApiProject): Opportunity {
-  console.log("[adapter] raw guarantor:", p.guarantor)
-  console.log("[adapter] raw cheques:", p.cheques)
-
   const cheques = Array.isArray(p.cheques) ? p.cheques : []
   const totalFunding =
     cheques
@@ -66,7 +57,6 @@ export function mapApiProject(p: ApiProject): Opportunity {
     cheques: Array.isArray(p.cheques) && p.cheques.length > 0 ? p.cheques : undefined,
     fundedPercent: p.fundedPercent ?? 0,
     totalFunding,
-    totalFundingLabel: "",
     averageProfit: p.averageProfit ?? 0,
     daysFrom: p.daysFrom ?? 0,
     daysTo: p.daysTo ?? 0,

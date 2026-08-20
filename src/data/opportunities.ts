@@ -9,7 +9,6 @@ export interface Opportunity {
     image: string
     logo: string // مونوگرام / حروف اختصاری
     totalFunding: number // ریال
-    totalFundingLabel: string
     fundedPercent: number
     daysFrom: number
     daysTo: number
@@ -30,101 +29,7 @@ export interface Opportunity {
     creditRating: string // رتبه اعتباری
 }
 
-export const opportunities: Opportunity[] = [
-    {
-        id: "hooshmand-energy",
-        title: "توسعه سامانه ذخیره‌سازی انرژی هوشمند",
-        description:
-            "تامین مالی خط تولید باتری‌های لیتیومی نسل جدید با بازدهی بالا برای شبکه‌های توزیع انرژی پاک.",
-        image: "/images/project-energy.png",
-        logo: "انرژی",
-        totalFunding: 4_750_000_000,
-        totalFundingLabel: "۴,۷۵۰ میلیارد ریال",
-        fundedPercent: 100,
-        daysFrom: 75,
-        daysTo: 75,
-        amountFrom: 1_350_000_000,
-        amountTo: 3_400_000_000,
-        averageProfit: 0.46,
-        guarantor: "صندوق پژوهش و فناوری غیر دولتی توسعه فناوری‌های راهبردی" as unknown as Guarantor,
-        status: "closed",
-        stateLabel: "تکمیل شده",
-        companyName: "شرکت انرژی هوشمند پایدار پارس",
-        planIntro:
-            "این طرح با هدف راه‌اندازی خط تولید باتری‌های لیتیومی نسل جدید با ظرفیت بالا و عمر چرخه بیشتر اجرا می‌شود. محصولات این خط تولید برای ذخیره‌سازی انرژی در شبکه‌های توزیع برق و نیروگاه‌های خورشیدی کاربرد دارد و بخشی از نیاز داخلی را جایگزین واردات می‌کند.",
-        address: "تهران، شهرک علمی و تحقیقاتی، خیابان نوآوری، پلاک ۱۲",
-        evaluationPdfUrl: "/docs/evaluation-energy.pdf",
-        hasBouncedCheque: false,
-        creditRating: "A+",
-    },
-    {
-        id: "salamat-bio",
-        title: "تجهیزات تشخیص زیستی آزمایشگاهی",
-        description:
-            "سرمایه در گردش شرکت دانش‌بنیان تولید کیت‌های تشخیص مولکولی برای صادرات به بازارهای منطقه‌ای.",
-        image: "/images/project-bio.png",
-        logo: "زیست",
-        totalFunding: 3_200_000_000,
-        totalFundingLabel: "۳,۲۰۰ میلیارد ریال",
-        fundedPercent: 82,
-        daysFrom: 60,
-        daysTo: 90,
-        amountFrom: 900_000_000,
-        amountTo: 2_500_000_000,
-        averageProfit: 0.51,
-        guarantor: "صندوق نوآوری و شکوفایی معاونت علمی ریاست جمهوری" as unknown as Guarantor,
-        status: "open",
-        stateLabel: "در حال جذب سرمایه",
-        companyName: "شرکت دانش‌بنیان تشخیص زیستی سلامت",
-        planIntro:
-            "تامین سرمایه در گردش برای افزایش ظرفیت تولید کیت‌های تشخیص مولکولی و توسعه بازار صادراتی در کشورهای منطقه. این شرکت دارای مجوزهای لازم بهداشتی و گواهی‌نامه‌های کیفیت بین‌المللی است.",
-        address: "اصفهان، شهرک علمی و تحقیقاتی اصفهان، ساختمان فناوری، واحد ۷",
-        evaluationPdfUrl: "/docs/evaluation-bio.pdf",
-        hasBouncedCheque: false,
-        creditRating: "A",
-    },
-    {
-        id: "digital-agri",
-        title: "پلتفرم کشاورزی دقیق و پایش هوشمند مزارع",
-        description:
-            "توسعه زیرساخت اینترنت اشیا و حسگرهای میدانی برای بهینه‌سازی مصرف آب و افزایش بهره‌وری محصول.",
-        image: "/images/project-agri.png",
-        logo: "کشت",
-        totalFunding: 2_800_000_000,
-        totalFundingLabel: "۲,۸۰۰ میلیارد ریال",
-        fundedPercent: 47,
-        daysFrom: 45,
-        daysTo: 80,
-        amountFrom: 500_000_000,
-        amountTo: 1_800_000_000,
-        averageProfit: 0.43,
-        guarantor: "صندوق پژوهش و فناوری غیر دولتی توسعه فناوری‌های راهبردی" as unknown as Guarantor,
-        status: "open",
-        stateLabel: "در حال جذب سرمایه",
-        companyName: "شرکت کشاورزی هوشمند دیجیتال مزرعه",
-        planIntro:
-            "توسعه زیرساخت اینترنت اشیا و استقرار حسگرهای میدانی برای پایش لحظه‌ای رطوبت خاک، دما و سلامت گیاه. هدف طرح کاهش مصرف آب و افزایش بهره‌وری محصولات کشاورزی از طریق تصمیم‌گیری داده‌محور است.",
-        address: "شیراز، پارک علم و فناوری فارس، مرکز رشد، واحد ۲۱",
-        evaluationPdfUrl: "/docs/evaluation-agri.pdf",
-        hasBouncedCheque: true,
-        creditRating: "B+",
-    },
-]
-
-// فیلتر وضعیت فرصت‌ها. در نسخه واقعی این مقدار به‌عنوان query param به API ارسال
-// می‌شود (مثلاً /api/opportunities?status=open) و فیلتر سمت سرور انجام می‌گیرد.
 export type OpportunityStatusFilter = "open" | "closed" | "all"
-
-export function getOpportunities(
-    status: OpportunityStatusFilter,
-): Opportunity[] {
-    if (status === "all") return opportunities
-    return opportunities.filter((item) => item.status === status)
-}
-
-export function getOpportunityById(id: string): Opportunity | undefined {
-    return opportunities.find((item) => item.id === id)
-}
 
 export interface Check {
     id: string
@@ -191,11 +96,7 @@ export const checks: Check[] = [
     },
 ]
 
-// همانند فرصت‌ها، فیلتر چک‌ها نیز در نسخه واقعی سمت سرور انجام می‌شود
-// (مثلاً /api/checks?status=open).
 export function getChecks(status: OpportunityStatusFilter): Check[] {
     if (status === "all") return checks
     return checks.filter((item) => item.status === status)
 }
-
-

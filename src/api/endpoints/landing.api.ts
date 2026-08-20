@@ -85,6 +85,5 @@ export async function getProjectById(
     `/v1/landing/projects/${hashedId}`,
     { signal },
   )
-  console.log("[getProjectById] raw response:", data)
   return data
 }

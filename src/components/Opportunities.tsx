@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from "react"
+import { useEffect, useState, useCallback } from "react"
 import {
   getChecks,
   type OpportunityStatusFilter,
@@ -102,7 +102,7 @@ export default function Opportunities() {
     setVisibleCount(PAGE_SIZE)
   }, [status, view])
 
-  const filteredChecks = useMemo(() => getChecks(status), [status])
+  const filteredChecks = getChecks(status)
   const visibleProjects = projects.slice(0, visibleCount)
   const hasMore = visibleCount < projects.length
 

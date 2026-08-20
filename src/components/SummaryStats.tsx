@@ -108,6 +108,15 @@ export default function SummaryStats() {
 
   const stats = data ? buildStats(data) : null
 
+  const placeholderCards = (Card: () => React.JSX.Element) =>
+    Array.from({ length: 4 }).map((_, i) => <Card key={i} />)
+
+  const cards = loading
+    ? placeholderCards(SkeletonCard)
+    : error || !stats
+      ? placeholderCards(StatCardFallback)
+      : stats.map((stat) => <StatCard key={stat.label} stat={stat} />)
+
   return (
     <section
       id="summary"
@@ -127,13 +136,7 @@ export default function SummaryStats() {
       </div>
 
       <div className="mt-14 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-          : error || !stats
-            ? Array.from({ length: 4 }).map((_, i) => (
-                <StatCardFallback key={i} />
-              ))
-            : stats.map((stat) => <StatCard key={stat.label} stat={stat} />)}
+        {cards}
       </div>
     </section>
   )

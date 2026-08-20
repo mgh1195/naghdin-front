@@ -27,6 +27,12 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
     return () => window.removeEventListener("scroll", onScroll)
   }, [alwaysSolid])
 
+  const handleLogout = async () => {
+    const ok = await logout()
+    setOpen(false)
+    if (ok) navigate("/login", { replace: true })
+  }
+
   return (
     <header
       className={cn(
@@ -85,10 +91,7 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
               </span>
               <button
                 type="button"
-                onClick={async () => {
-                  const ok = await logout()
-                  if (ok) navigate("/login", { replace: true })
-                }}
+                onClick={handleLogout}
                 className={cn(
                   "flex size-9 items-center justify-center rounded-lg transition-colors",
                   visible
@@ -150,11 +153,7 @@ export default function Navbar({ alwaysSolid }: { alwaysSolid?: boolean }) {
               <li className="mt-2">
                 <button
                   type="button"
-                  onClick={async () => {
-                    const ok = await logout()
-                    setOpen(false)
-                    if (ok) navigate("/login", { replace: true })
-                  }}
+                  onClick={handleLogout}
                   className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
                 >
                   <LogOut className="size-4" />

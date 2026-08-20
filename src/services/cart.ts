@@ -1,6 +1,5 @@
 import type { Check } from "@/data/opportunities"
 import { checks as allChecks } from "@/data/opportunities"
-import { apiFetch } from "./http"
 
 export interface CartItem {
   check: Check
@@ -19,41 +18,20 @@ export interface Cart {
   latestDueDate: string | null
 }
 
-// TODO: Replace with real API endpoint — POST /cart/add
-export async function addToCartApi(checkId: string): Promise<Cart> {
-  // TODO: Call actual API — example:
-  // const res = await apiFetch("/api/cart/add", {
-  //   method: "POST",
-  //   body: JSON.stringify({ checkId }),
-  // })
-  // if (!res.ok) throw new Error("خطا در افزودن به سبد خرید")
-  // return res.json()
+// TODO: Replace with real API endpoints — currently backed by localStorage mocks.
 
+export async function addToCartApi(checkId: string): Promise<Cart> {
   await new Promise((resolve) => setTimeout(resolve, 600))
   return getMockCart([checkId, ...(getMockCartIds())])
 }
 
-// TODO: Replace with real API endpoint — DELETE /cart/remove
 export async function removeFromCartApi(checkId: string): Promise<Cart> {
-  // TODO: Call actual API — example:
-  // const res = await apiFetch(`/api/cart/remove/${checkId}`, {
-  //   method: "DELETE",
-  // })
-  // if (!res.ok) throw new Error("خطا در حذف از سبد خرید")
-  // return res.json()
-
   await new Promise((resolve) => setTimeout(resolve, 400))
   const ids = getMockCartIds().filter((id) => id !== checkId)
   return getMockCart(ids)
 }
 
-// TODO: Replace with real API endpoint — GET /cart
 export async function getCartApi(): Promise<Cart> {
-  // TODO: Call actual API — example:
-  // const res = await apiFetch("/api/cart")
-  // if (!res.ok) throw new Error("خطا در دریافت سبد خرید")
-  // return res.json()
-
   await new Promise((resolve) => setTimeout(resolve, 500))
   return getMockCart(getMockCartIds())
 }
@@ -84,7 +62,7 @@ function getMockCart(ids: string[]): Cart {
     .filter(Boolean) as CartItem[]
 
   const dates = items.map((i) => i.check.date).filter(Boolean)
-  // TODO: All summary fields should come from the real API response
+  // TODO: Summary fields should come from the real API response.
   return {
     items,
     totalCount: items.length,
@@ -99,13 +77,6 @@ function getMockCart(ids: string[]): Cart {
 }
 
 // TODO: Replace with real API endpoint — POST /purchase/confirm
-export async function confirmPurchaseApi(checkIds: string[]): Promise<void> {
-  // TODO: Call actual API — example:
-  // const res = await apiFetch("/api/purchase/confirm", {
-  //   method: "POST",
-  //   body: JSON.stringify({ checkIds }),
-  // })
-  // if (!res.ok) throw new Error("خطا در نهایی‌سازی خرید")
-
+export async function confirmPurchaseApi(_checkIds: string[]): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 1500))
 }

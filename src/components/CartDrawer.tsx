@@ -1,6 +1,7 @@
 import { X, Trash2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useCart } from "@/context/CartContext"
+import type { Cart } from "@/services/cart"
 import { faNumber, toFa } from "@/lib/utils"
 
 export default function CartDrawer() {
@@ -108,7 +109,7 @@ function CartSummary({
   cart,
   onCheckout,
 }: {
-  cart: NonNullable<ReturnType<typeof useCart>["cart"]>
+  cart: Cart
   onCheckout: () => void
 }) {
   return (
